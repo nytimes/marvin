@@ -1,0 +1,8 @@
+runtime: go
+api_version: go1.8
+module: readinglist
+
+handlers:
+- url: /.*
+  script: _go_app
+  login: required

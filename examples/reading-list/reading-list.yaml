@@ -1,0 +1,112 @@
+swagger: '2.0'
+
+info:
+  version: "0.0.0"
+  title: Reading List
+  description: Reading list
+
+paths:
+  /list.(protoJSON):
+    get:
+      description: |
+       Get your links via JSON or Protobuf
+      produces:
+        - application/octet-stream
+        - application/json
+      parameters:
+        - name: protoJSON
+          in: path
+          required: true
+          description: The transport to respond with (Protobuf or JSON)
+          pattern: (proto|json)
+          type: string
+          x-proto-tag: 1
+        - name: limit
+          in: query
+          description: The limit of links to fetch
+          type: number
+          format: int64
+          x-proto-tag: 2
+        - name: userID
+          in: header
+          required: true
+          description: value from Google, populated by middleware
+          type: string
+          x-proto-tag: 3
+      responses:
+        200:
+          description: Successful link retrieval
+          schema:
+            $ref: '#/definitions/Links'
+        500:
+          description: We had a server error
+          schema:
+            $ref: '#/definitions/Message'
+
+  /link.(protoJSON):
+    put:
+      description: |
+       Save a link via JSON or Protobuf
+      produces:
+        - application/octet-stream
+      parameters:
+        - name: protoJSON
+          in: path
+          required: true
+          description: The transport to respond with (Protobuf or JSON)
+          pattern: (proto|json)
+          type: string
+          x-proto-tag: 1
+        - name: userID
+          in: header
+          required: true
+          description: value from Google, populated by middleware
+          type: string
+          x-proto-tag: 2
+        - name: link
+          in: body
+          required: true
+          description: The Link to save
+          schema:
+            $ref: '#/definitions/Link'
+          x-proto-tag: 3
+      responses:
+        201:
+          description: Successful link save
+          schema:
+            $ref: '#/definitions/Message'
+        401:
+          description: No cookie
+          schema:
+            $ref: '#/definitions/Message'
+        500:
+          description: Server problems
+          schema:
+            $ref: '#/definitions/Message'
+
+definitions:
+  Links:
+    type: object
+    properties:
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/Link'
+        x-proto-tag: 1
+
+  Link:
+    type: object
+    properties:
+      id:
+        type: string
+        x-proto-tag: 1
+      url:
+        type: string
+        x-proto-tag: 2
+
+  Message:
+    type: object
+    properties:
+      message:
+        type: string
+        x-proto-tag: 1

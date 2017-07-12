@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package readinglist;
+
+message PutLinkProtoJSONRequest {
+    // The Link to save
+    Link link = 3;
+    // The transport to respond with (Protobuf or JSON)
+    string protoJSON = 1;
+    // value from Google, populated by middleware
+    string userID = 2;
+}
+
+message GetListProtoJSONRequest {
+    // The limit of links to fetch
+    int64 limit = 2;
+    // The transport to respond with (Protobuf or JSON)
+    string protoJSON = 1;
+    // value from Google, populated by middleware
+    string userID = 3;
+}
+
+message Link {
+    string id = 1;
+    string url = 2;
+}
+
+message Links {
+    repeated Link links = 1;
+}
+
+message Message {
+    string message = 1;
+}
+
+service ReadingListService {
+    // Save a link via JSON or Protobuf
+    rpc PutLinkProtoJSON(PutLinkProtoJSONRequest) returns (Message) {}
+    // Get your links via JSON or Protobuf
+    rpc GetListProtoJSON(GetListProtoJSONRequest) returns (Links) {}
+}
