@@ -70,10 +70,6 @@ func (s server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.mux.ServeHTTP(w, r)
 }
 
-// UnexpectedServerError is returned with a 500 status code when server recovers
-// from a panic in a request.
-var UnexpectedServerError = []byte("unexpected server error")
-
 // Register will accept and register server, JSONService or MixedService implementations.
 func (s server) Register(svc Service) error {
 	var (
