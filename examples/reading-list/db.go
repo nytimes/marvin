@@ -3,14 +3,17 @@ package readinglist
 import (
 	"context"
 	"strconv"
+	"strings"
 
 	"github.com/pkg/errors"
+	ocontext "golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 )
 
 type DB interface {
-	GetLinks(ctx context.Context, userID string, limit int) ([]*Link, error)
-	PutLink(ctx context.Context, userID string, link *Link) error
+	GetLinks(ctx context.Context, userID string, limit int) ([]string, error)
+	PutLink(ctx context.Context, userID string, url string) error
+	DeleteLink(ctx context.Context, userID string, url string) error
 }
 
 type Datastore struct{}
@@ -23,30 +26,59 @@ func NewDB() Datastore {
 
 type linkData struct {
 	UserID string
-	Link   Link
+	URL    string `datastore:",noindex"`
 }
 
-func (d Datastore) GetLinks(ctx context.Context, userID string, limit int) ([]*Link, error) {
+func newKey(ctx context.Context, userID, url string) *datastore.Key {
+	skey := strings.TrimPrefix(url, "https://www.nytimes.com/")
+	return datastore.NewKey(ctx, LinkKind, userID+"-"+skey, 0, nil)
+}
+
+func (d Datastore) GetLinks(ctx context.Context, userID string, limit int) ([]string, error) {
 	var datas []*linkData
 	_, err := datastore.NewQuery(LinkKind).Filter("UserID =", userID).
 		Limit(limit).GetAll(ctx, &datas)
-	links := make([]*Link, len(datas))
+	links := make([]string, len(datas))
 	for i, d := range datas {
-		links[i] = &d.Link
+		links[i] = d.URL
 	}
 	return links, errors.WithMessage(err, "unable to query links")
 }
 
-func (d Datastore) PutLink(ctx context.Context, userID string, link *Link) error {
-	id, _, err := datastore.AllocateIDs(ctx, LinkKind, nil, 1)
-	if err != nil {
-		return errors.WithMessage(err, "unable to allocate IDs")
+func (d Datastore) DeleteLink(ctx context.Context, userID string, url string) error {
+	err := datastore.Delete(ctx, newKey(ctx, userID, url))
+	return errors.Wrap(err, "unable to delete url")
+}
+
+func (d Datastore) PutLink(ctx context.Context, userID string, url string) error {
+	key := newKey(ctx, userID, url)
+
+	// run in transaction to avoid any dupes
+	err := datastore.RunInTransaction(ctx, func(ctx ocontext.Context) error {
+		var existing linkData
+		err := datastore.Get(ctx, key, &existing)
+		if err != nil && err != datastore.ErrNoSuchEntity {
+			return errors.Wrap(err, "unable to check if link already exists")
+		}
+		// link already exists, just return
+		if err != datastore.ErrNoSuchEntity {
+			return nil
+		}
+		// put new link
+		_, err = datastore.Put(ctx, key, &linkData{
+			UserID: userID,
+			URL:    url,
+		})
+		return err
+	}, nil)
+	return errors.Wrap(err, "unable to put link")
+}
+
+func reverse(id int32) string {
+	runes := []rune(strconv.FormatInt(int64(id), 10))
+	n := len(runes)
+	for i := 0; i < n/2; i++ {
+		runes[i], runes[n-1-i] = runes[n-1-i], runes[i]
 	}
-	link.Id = userID + "-" + strconv.FormatInt(id, 10)
-	key := datastore.NewKey(ctx, LinkKind, link.Id, 0, nil)
-	_, err = datastore.Put(ctx, key, &linkData{
-		UserID: userID,
-		Link:   *link,
-	})
-	return errors.WithMessage(err, "unable to put link")
+	return string(runes)
 }

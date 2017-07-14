@@ -25,7 +25,7 @@ paths:
           in: query
           description: The limit of links to fetch
           type: number
-          format: int64
+          format: int32
           x-proto-tag: 2
         - name: userID
           in: header
@@ -63,12 +63,12 @@ paths:
           description: value from Google, populated by middleware
           type: string
           x-proto-tag: 2
-        - name: link
+        - name: request
           in: body
           required: true
           description: The Link to save
           schema:
-            $ref: '#/definitions/Link'
+            $ref: '#/definitions/LinkRequest'
           x-proto-tag: 3
       responses:
         201:
@@ -97,12 +97,18 @@ definitions:
   Link:
     type: object
     properties:
-      id:
-        type: string
-        x-proto-tag: 1
       url:
         type: string
-        x-proto-tag: 2
+        x-proto-tag: 1
+
+  LinkRequest:
+    type: object
+    properties:
+      link:
+        $ref: '#/definitions/Link'
+      delete:
+        type: boolean
+        description: True to remove this link from the user's list.
 
   Message:
     type: object

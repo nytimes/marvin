@@ -24,13 +24,22 @@ func (s linkService) GetLinks(ctx context.Context, r *GetListProtoJSONRequest) (
 		r.Limit = 50
 	}
 	links, err := s.db.GetLinks(ctx, r.UserID, int(r.Limit))
-	return &Links{Links: links}, errors.WithMessage(err, "unable to get links")
+	lks := make([]*Link, len(links))
+	for i, l := range links {
+		lks[i] = &Link{Url: l}
+	}
+	return &Links{Links: lks}, errors.WithMessage(err, "unable to get links")
 }
 
 func (s linkService) PutLink(ctx context.Context, r *PutLinkProtoJSONRequest) (*Message, error) {
-	err := s.db.PutLink(ctx, r.UserID, r.Link)
+	var err error
+	if r.Request.Delete {
+		err = s.db.DeleteLink(ctx, r.UserID, r.Request.Link.Url)
+	} else {
+		err = s.db.PutLink(ctx, r.UserID, r.Request.Link.Url)
+	}
 	if err != nil {
-		return nil, errors.WithMessage(err, "unable to save link")
+		return nil, errors.Wrap(err, "problems updating link")
 	}
 	return &Message{Message: "success"}, nil
 }
