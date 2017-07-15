@@ -37,20 +37,24 @@ var defaultOpts = []httptransport.ServerOption{
 // and register the server with App Engine.
 // Call this in an `init()` function.
 func Init(service Service) {
-	srvr := newServer(service.RouterOptions()...)
-	err := srvr.Register(service)
-	if err != nil {
-		panic("unable to register service: " + err.Error())
-	}
-	http.Handle("/", srvr)
+	http.Handle("/", NewServer(service))
 }
 
-type server struct {
+// Server manages routing and initiating the request context.
+// Users should only need to interact with this struct in testing.
+//
+// See examples/reading-list/service_test.go for usage.
+type Server struct {
 	mux Router
 }
 
-// newServer will init the mux and register all endpoints.
-func newServer(opts ...RouterOption) server {
+// NewServer will init the mux and register all endpoints.
+// This gets called by Init() and should only be used within
+// tests.
+//
+// See examples/reading-list/service_test.go for usage.
+func NewServer(svc Service) Server {
+	opts := svc.RouterOptions()
 	if len(opts) == 0 {
 		// select the default router
 		opts = append(opts, RouterSelect(""))
@@ -59,19 +63,27 @@ func newServer(opts ...RouterOption) server {
 	for _, opt := range opts {
 		r = opt(r)
 	}
-	return server{
+	svr := Server{
 		mux: r,
 	}
+	err := svr.register(svc)
+	if err != nil {
+		panic("unable to register service: " + err.Error())
+	}
+
+	return svr
 }
 
-func (s server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// ServeHTTP is the entrypoint for the server. This will initiate
+// the app engine context and hand the request off to the router.
+func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r = r.WithContext(internal.NewContext(r))
 	// hand the request off to the router
 	s.mux.ServeHTTP(w, r)
 }
 
-// Register will accept and register server, JSONService or MixedService implementations.
-func (s server) Register(svc Service) error {
+// register will accept and register server, JSONService or MixedService implementations.
+func (s Server) register(svc Service) error {
 	var (
 		jseps map[string]map[string]HTTPEndpoint
 		peps  map[string]map[string]HTTPEndpoint

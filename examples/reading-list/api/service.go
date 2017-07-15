@@ -1,4 +1,4 @@
-package http
+package api
 
 import (
 	"context"
@@ -57,13 +57,13 @@ func (s httpService) HTTPMiddleware(h http.Handler) http.Handler {
 
 func (s httpService) Middleware(ep endpoint.Endpoint) endpoint.Endpoint {
 	return endpoint.Endpoint(func(ctx context.Context, r interface{}) (interface{}, error) {
-		usr := user.Current(ctx)
-		if usr == nil {
+		usr, err := user.CurrentOAuth(ctx, "")
+		if usr == nil || err != nil {
 			// reject if user is not logged in
-			return marvin.NewProtoStatusResponse(
-				&readinglist.Message{"please sign in"},
+			return nil, marvin.NewProtoStatusResponse(
+				&readinglist.Message{"please provide oauth token"},
 				http.StatusUnauthorized,
-			), nil
+			)
 		}
 		return ep(ctx, r)
 	})
@@ -91,7 +91,7 @@ func (s httpService) ProtoEndpoints() map[string]map[string]marvin.HTTPEndpoint 
 		"/link.proto": {
 			"PUT": {
 				Endpoint: s.PutLink,
-				Decoder:  decodePutRequest,
+				Decoder:  decodePutProtoRequest,
 			},
 		},
 		"/list.proto": {
@@ -104,7 +104,7 @@ func (s httpService) ProtoEndpoints() map[string]map[string]marvin.HTTPEndpoint 
 }
 
 func getUserID(ctx context.Context) string {
-	if usr := user.Current(ctx); usr != nil {
+	if usr, err := user.CurrentOAuth(ctx); usr != nil && err == nil {
 		return usr.ID
 	}
 	return ""
