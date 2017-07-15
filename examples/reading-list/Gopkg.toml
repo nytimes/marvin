@@ -22,8 +22,8 @@
 
 
 [[constraint]]
-  branch = "master"
   name = "github.com/NYTimes/marvin"
+  version = "0.1.0"
 
 [[constraint]]
   branch = "master"
@@ -36,3 +36,7 @@
 [[constraint]]
   name = "github.com/pkg/errors"
   version = "0.8.0"
+
+[[override]]
+  name = "github.com/julienschmidt/httprouter"
+  branch = "master"

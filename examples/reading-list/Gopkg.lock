@@ -14,10 +14,10 @@
   revision = "1c0e1e9ca7a78cccba0be9bbb930543a186591f7"
 
 [[projects]]
-  branch = "master"
   name = "github.com/NYTimes/marvin"
   packages = [".","internal","marvintest"]
-  revision = "17430c639da46653c224363bf4a8af99f0db52cf"
+  revision = "d5e73051dadfceda406f3eb553f9f6446f6033ab"
+  version = "v0.1.0"
 
 [[projects]]
   name = "github.com/dgrijalva/jwt-go"
@@ -86,10 +86,10 @@
   version = "v0.8.1"
 
 [[projects]]
+  branch = "master"
   name = "github.com/julienschmidt/httprouter"
   packages = ["."]
-  revision = "8c199fb6259ffc1af525cc3ad52ee60ba8359669"
-  version = "v1.1"
+  revision = "975b5c4c7c21c0e3d2764200bf2aa8e34657ae6e"
 
 [[projects]]
   name = "github.com/kelseyhightower/envconfig"
@@ -160,6 +160,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "96db26ccb0d6b3e51f5aefe87e52b7439af2c043ae6a71ef9c563cd7c3fe3c62"
+  inputs-digest = "a9090ffc4bc6fefdb6cab86a070c493be385011dc4b9935c84add26bea65b8d3"
   solver-name = "gps-cdcl"
   solver-version = 1
