@@ -19,8 +19,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ Service = Client{}
-
 type Client struct {
 	key string
 	l   log.Logger
@@ -48,16 +46,22 @@ func NewClient(host string, l log.Logger, opts ...httptransport.ClientOption) *C
 	}
 }
 
-func (c Client) GetLinks(ctx context.Context, r *GetListProtoJSONRequest) (*Links, error) {
-	out, err := c.get(ctx, r)
+func (c Client) GetLinks(ctx context.Context, limit int) (*Links, error) {
+	out, err := c.get(ctx, &GetListProtoJSONRequest{Limit: int32(limit)})
 	if out != nil {
 		return out.(*Links), err
 	}
 	return nil, err
 }
 
-func (c Client) PutLink(ctx context.Context, r *PutLinkProtoJSONRequest) (*Message, error) {
-	out, err := c.put(ctx, r)
+func (c Client) PutLink(ctx context.Context, url string, delete bool) (*Message, error) {
+
+	out, err := c.put(ctx, &PutLinkProtoJSONRequest{
+		Request: &LinkRequest{
+			Link:   &Link{Url: url},
+			Delete: delete,
+		},
+	})
 	if out != nil {
 		return out.(*Message), err
 	}
@@ -66,7 +70,6 @@ func (c Client) PutLink(ctx context.Context, r *PutLinkProtoJSONRequest) (*Messa
 
 func encodePut(ctx context.Context, r *http.Request, req interface{}) error {
 	pr := req.(*PutLinkProtoJSONRequest)
-	r.Header.Add("Authorization", pr.UserID)
 	// server middleware will pull the ID from oauth
 	pr.UserID = ""
 	return marvin.EncodeProtoRequest(ctx, r, pr)
@@ -74,7 +77,6 @@ func encodePut(ctx context.Context, r *http.Request, req interface{}) error {
 
 func encodeGet(ctx context.Context, r *http.Request, req interface{}) error {
 	gr := req.(*GetListProtoJSONRequest)
-	r.Header.Add("Authorization", gr.UserID)
 	r.URL.RawQuery = "?limit=" + strconv.FormatInt(int64(gr.Limit), 10)
 	return nil
 }
