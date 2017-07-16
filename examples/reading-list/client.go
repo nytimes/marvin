@@ -9,13 +9,13 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/NYTimes/marvin"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/sd"
 	"github.com/go-kit/kit/sd/lb"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/golang/protobuf/proto"
-	"github.com/nytm/marvin"
 	"github.com/pkg/errors"
 )
 

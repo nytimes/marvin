@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/NYTimes/gizmo/config"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/kelseyhightower/envconfig"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	appengine "google.golang.org/api/appengine/v1"
@@ -25,7 +25,7 @@ func ScalingHandler(ctx context.Context, _ interface{}) (interface{}, error) {
 		Up   int64 `envconfig:"IDLE_INSTANCES_UP"`
 		Down int64 `envconfig:"IDLE_INSTANCES_DOWN"`
 	}
-	config.LoadEnvConfig(&scaling)
+	envconfig.MustProcess("", &scaling)
 
 	svcName := appengin.ModuleName(ctx)
 
