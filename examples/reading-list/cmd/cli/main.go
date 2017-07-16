@@ -79,10 +79,5 @@ func httpClient(ctx context.Context) *http.Client {
 	if err != nil {
 		panic("unable to parse credentials: " + err.Error())
 	}
-	t, err := conf.TokenSource(ctx).Token()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("%#v\n", t)
 	return oauth2.NewClient(ctx, conf.TokenSource(ctx))
 }
