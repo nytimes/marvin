@@ -4,7 +4,7 @@ This example implements a clone of NYT's 'saved articles API' that allows users 
 
 Instead of utilizing NYT's auth, this example leans on Google OAuth for user identity. When running locally, GAE's dev_appserver.py appears to always inject a user with an ID of "0".
 
-To run this service, you must have 'legacy' App Engine SDK installed at the latest version that supports Go 1.8 then execute the following command in the nested `/api` directory:
+To run this service, you must have the 'legacy' App Engine SDK installed at the latest version that supports Go 1.8, then execute the following command in the nested `/api` directory:
 
 `goapp serve`
 
