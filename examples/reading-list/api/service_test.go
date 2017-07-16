@@ -200,7 +200,7 @@ func TestService(t *testing.T) {
 				}
 
 				// le sigh, local datastore be slow :(
-				time.Sleep(time.Second)
+				time.Sleep(2 * time.Second)
 			}
 
 			// shut down the dev_appserver and wipe the local DB for the next scenario

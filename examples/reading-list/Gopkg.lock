@@ -8,22 +8,10 @@
   version = "v0.10.0"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/NYTimes/gizmo"
-  packages = ["config"]
-  revision = "1c0e1e9ca7a78cccba0be9bbb930543a186591f7"
-
-[[projects]]
   name = "github.com/NYTimes/marvin"
   packages = [".","internal","marvintest"]
-  revision = "d5e73051dadfceda406f3eb553f9f6446f6033ab"
-  version = "v0.1.0"
-
-[[projects]]
-  name = "github.com/dgrijalva/jwt-go"
-  packages = ["."]
-  revision = "d2709f9f1f31ebcda9651b03077758c1f3a0018c"
-  version = "v3.0.0"
+  revision = "4a905c64627c847b5cb7b920a897402ba755814a"
+  version = "v0.1.1"
 
 [[projects]]
   name = "github.com/go-kit/kit"
@@ -62,30 +50,6 @@
   version = "v1.4.0"
 
 [[projects]]
-  name = "github.com/hashicorp/consul"
-  packages = ["api"]
-  revision = "2c7715154d8d4568524b76d2d4deb7ca6fd1b285"
-  version = "v0.8.5"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/hashicorp/go-cleanhttp"
-  packages = ["."]
-  revision = "3573b8b52aa7b37b9358d966a898feb387f62437"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/hashicorp/go-rootcerts"
-  packages = ["."]
-  revision = "6bb64b370b90e7ef1fa532be9e591a81c3493e00"
-
-[[projects]]
-  name = "github.com/hashicorp/serf"
-  packages = ["coordinate"]
-  revision = "d6574a5bb1226678d7010325fb6c985db20ee458"
-  version = "v0.8.1"
-
-[[projects]]
   branch = "master"
   name = "github.com/julienschmidt/httprouter"
   packages = ["."]
@@ -116,18 +80,6 @@
   revision = "7cafcd837844e784b526369c9bce262804aebc60"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/mitchellh/go-homedir"
-  packages = ["."]
-  revision = "b8bc1bf767474819792c23f32d8286a45736f1c6"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/nytm/marvin"
-  packages = [".","internal"]
-  revision = "fcc716b638646fb7e1daf3b7aa75e225ef19a6af"
-
-[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -137,7 +89,7 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp"]
-  revision = "f01ecb60fe3835d80d9a0b7b2bf24b228c89260e"
+  revision = "b3756b4b77d7b13260a0a2ec658753cf48922eac"
 
 [[projects]]
   branch = "master"
@@ -160,6 +112,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a9090ffc4bc6fefdb6cab86a070c493be385011dc4b9935c84add26bea65b8d3"
+  inputs-digest = "9be203a6570b8aca0eb72d1edbf957add6b9cd90fa729a01ad4fd1e78042938b"
   solver-name = "gps-cdcl"
   solver-version = 1

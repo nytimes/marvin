@@ -57,7 +57,7 @@ func (s httpService) HTTPMiddleware(h http.Handler) http.Handler {
 
 func (s httpService) Middleware(ep endpoint.Endpoint) endpoint.Endpoint {
 	return endpoint.Endpoint(func(ctx context.Context, r interface{}) (interface{}, error) {
-		usr, err := user.CurrentOAuth(ctx, "")
+		usr, err := user.CurrentOAuth(ctx, "https://www.googleapis.com/auth/userinfo.profile")
 		if usr == nil || err != nil {
 			// reject if user is not logged in
 			return nil, marvin.NewProtoStatusResponse(
@@ -65,7 +65,8 @@ func (s httpService) Middleware(ep endpoint.Endpoint) endpoint.Endpoint {
 				http.StatusUnauthorized,
 			)
 		}
-		return ep(ctx, r)
+		// add the user to the request context and continue
+		return ep(readinglist.AddUser(ctx, usr), r)
 	})
 }
 
@@ -101,11 +102,4 @@ func (s httpService) ProtoEndpoints() map[string]map[string]marvin.HTTPEndpoint 
 			},
 		},
 	}
-}
-
-func getUserID(ctx context.Context) string {
-	if usr, err := user.CurrentOAuth(ctx); usr != nil && err == nil {
-		return usr.ID
-	}
-	return ""
 }

@@ -23,15 +23,11 @@
 
 [[constraint]]
   name = "github.com/NYTimes/marvin"
-  version = "0.1.0"
+  version = "0.1.1"
 
 [[constraint]]
   branch = "master"
   name = "github.com/kr/pretty"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/nytm/marvin"
 
 [[constraint]]
   name = "github.com/pkg/errors"

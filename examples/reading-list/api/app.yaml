@@ -1,7 +1,8 @@
 runtime: go
 api_version: go1.8
-module: readinglist
+module: default
 
 handlers:
 - url: /.*
   script: _go_app
+  secure: always

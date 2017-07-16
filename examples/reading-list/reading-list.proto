@@ -6,18 +6,14 @@ message PutLinkProtoJSONRequest {
     // The transport to respond with (Protobuf or JSON)
     string protoJSON = 1;
     // The Link to save
-    LinkRequest request = 3;
-    // value from Google, populated by middleware
-    string userID = 2;
+    LinkRequest request = 2;
 }
 
 message GetListProtoJSONRequest {
     // The limit of links to fetch
     int32 limit = 2;
-    // The transport to respond with (Protobuf or JSON)
+    // The transport to respond with (Protobuf or JSON).
     string protoJSON = 1;
-    // value from Google, populated by middleware
-    string userID = 3;
 }
 
 message Link {
