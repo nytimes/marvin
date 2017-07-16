@@ -55,7 +55,6 @@ func (c Client) GetLinks(ctx context.Context, limit int) (*Links, error) {
 }
 
 func (c Client) PutLink(ctx context.Context, url string, delete bool) (*Message, error) {
-
 	out, err := c.put(ctx, &PutLinkProtoJSONRequest{
 		Request: &LinkRequest{
 			Link:   &Link{Url: url},
@@ -70,14 +69,12 @@ func (c Client) PutLink(ctx context.Context, url string, delete bool) (*Message,
 
 func encodePut(ctx context.Context, r *http.Request, req interface{}) error {
 	pr := req.(*PutLinkProtoJSONRequest)
-	// server middleware will pull the ID from oauth
-	pr.UserID = ""
-	return marvin.EncodeProtoRequest(ctx, r, pr)
+	return marvin.EncodeProtoRequest(ctx, r, pr.Request)
 }
 
 func encodeGet(ctx context.Context, r *http.Request, req interface{}) error {
 	gr := req.(*GetListProtoJSONRequest)
-	r.URL.RawQuery = "?limit=" + strconv.FormatInt(int64(gr.Limit), 10)
+	r.URL.RawQuery = "limit=" + strconv.FormatInt(int64(gr.Limit), 10)
 	return nil
 }
 

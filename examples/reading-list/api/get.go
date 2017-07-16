@@ -5,21 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/NYTimes/marvin"
-	"google.golang.org/appengine/log"
-
 	readinglist "github.com/NYTimes/marvin/examples/reading-list"
 )
 
 func (s httpService) GetLinks(ctx context.Context, r interface{}) (interface{}, error) {
-	res, err := s.svc.GetLinks(ctx, r.(*readinglist.GetListProtoJSONRequest))
-	if err != nil {
-		log.Errorf(ctx, "unable to get links: %s", err)
-		return nil, marvin.NewProtoStatusResponse(
-			&readinglist.Message{Message: "unable to update link"},
-			http.StatusInternalServerError)
-	}
-	return res, nil
+	return s.svc.GetLinks(ctx, r.(*readinglist.GetListProtoJSONRequest))
 }
 
 func decodeGetRequest(ctx context.Context, r *http.Request) (interface{}, error) {
@@ -29,7 +19,6 @@ func decodeGetRequest(ctx context.Context, r *http.Request) (interface{}, error)
 		limit, _ = strconv.ParseInt(limitStr, 10, 64)
 	}
 	return &readinglist.GetListProtoJSONRequest{
-		Limit:  int32(limit),
-		UserID: getUserID(ctx),
+		Limit: int32(limit),
 	}, nil
 }

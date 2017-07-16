@@ -6,7 +6,7 @@ info:
   description: Reading list
 
 paths:
-  /list.(protoJSON):
+  /list.{protoJSON}:
     get:
       description: |
        Get your links via JSON or Protobuf
@@ -17,7 +17,7 @@ paths:
         - name: protoJSON
           in: path
           required: true
-          description: The transport to respond with (Protobuf or JSON)
+          description: The transport to respond with (Protobuf or JSON).
           pattern: (proto|json)
           type: string
           x-proto-tag: 1
@@ -27,12 +27,6 @@ paths:
           type: number
           format: int32
           x-proto-tag: 2
-        - name: userID
-          in: header
-          required: true
-          description: value from Google, populated by middleware
-          type: string
-          x-proto-tag: 3
       responses:
         200:
           description: Successful link retrieval
@@ -43,7 +37,7 @@ paths:
           schema:
             $ref: '#/definitions/Message'
 
-  /link.(protoJSON):
+  /link.{protoJSON}:
     put:
       description: |
        Save a link via JSON or Protobuf
@@ -57,19 +51,13 @@ paths:
           pattern: (proto|json)
           type: string
           x-proto-tag: 1
-        - name: userID
-          in: header
-          required: true
-          description: value from Google, populated by middleware
-          type: string
-          x-proto-tag: 2
         - name: request
           in: body
           required: true
           description: The Link to save
           schema:
             $ref: '#/definitions/LinkRequest'
-          x-proto-tag: 3
+          x-proto-tag: 2
       responses:
         201:
           description: Successful link save

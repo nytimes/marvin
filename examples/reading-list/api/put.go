@@ -8,20 +8,12 @@ import (
 
 	"github.com/NYTimes/marvin"
 	"github.com/golang/protobuf/proto"
-	"google.golang.org/appengine/log"
 
 	readinglist "github.com/NYTimes/marvin/examples/reading-list"
 )
 
 func (s httpService) PutLink(ctx context.Context, r interface{}) (interface{}, error) {
-	res, err := s.svc.PutLink(ctx, r.(*readinglist.PutLinkProtoJSONRequest))
-	if err != nil {
-		log.Errorf(ctx, "unable to update link: %s", err)
-		return nil, marvin.NewProtoStatusResponse(
-			&readinglist.Message{Message: "unable to update link"},
-			http.StatusInternalServerError)
-	}
-	return res, nil
+	return s.svc.PutLink(ctx, r.(*readinglist.PutLinkProtoJSONRequest))
 }
 
 func decodePutRequest(ctx context.Context, r *http.Request) (interface{}, error) {
@@ -33,7 +25,6 @@ func decodePutRequest(ctx context.Context, r *http.Request) (interface{}, error)
 			http.StatusBadRequest)
 	}
 	return &readinglist.PutLinkProtoJSONRequest{
-		UserID:  getUserID(ctx),
 		Request: &lr}, nil
 }
 
@@ -52,6 +43,5 @@ func decodePutProtoRequest(ctx context.Context, r *http.Request) (interface{}, e
 			http.StatusBadRequest)
 	}
 	return &readinglist.PutLinkProtoJSONRequest{
-		UserID:  getUserID(ctx),
 		Request: &lr}, nil
 }
