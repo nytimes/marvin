@@ -2,7 +2,6 @@ package readinglist
 
 import (
 	"context"
-	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -31,7 +30,7 @@ type linkData struct {
 
 func newKey(ctx context.Context, userID, url string) *datastore.Key {
 	skey := strings.TrimPrefix(url, "https://www.nytimes.com/")
-	return datastore.NewKey(ctx, LinkKind, userID+"-"+skey, 0, nil)
+	return datastore.NewKey(ctx, LinkKind, reverse(userID)+"-"+skey, 0, nil)
 }
 
 func (d Datastore) GetLinks(ctx context.Context, userID string, limit int) ([]string, error) {
@@ -74,8 +73,10 @@ func (d Datastore) PutLink(ctx context.Context, userID string, url string) error
 	return errors.Wrap(err, "unable to put link")
 }
 
-func reverse(id int32) string {
-	runes := []rune(strconv.FormatInt(int64(id), 10))
+// Using this to turn keys 12345, 12346 into 54321, 64321 which are easier for
+// Datastore/BigTable to shard.
+func reverse(id string) string {
+	runes := []rune(id)
 	n := len(runes)
 	for i := 0; i < n/2; i++ {
 		runes[i], runes[n-1-i] = runes[n-1-i], runes[i]
