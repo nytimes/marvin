@@ -2,11 +2,16 @@
 
 This example implements a clone of NYT's 'saved articles API' that allows users to save, delete and retrieve nytimes.com article URLs.
 
-Instead of utilizing NYT's auth, this example leans on Google OAuth for user identity. When running locally, GAE's dev_appserver.py appears to always inject a user with an ID of "0".
+Instead of utilizing NYT's auth, this example leans on Google OAuth for user identity. When running locally, GAE's `dev_appserver.py` appears to always inject a user with an ID of "0".
 
-To run this service, you must have the 'legacy' App Engine SDK installed at the latest version that supports Go 1.8, then execute the following command in the nested `/api` directory:
+To run this service, you must be using [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/go/download) >= `162.0.0` or the "original" App Engine Go SDK >= `1.9.56`. Then execute the following command:
 
-`goapp serve`
+```sh
+# If using Cloud SDK:
+dev_appserver.py api/app.yaml
+# If using the original SDK:
+goapp serve api/app.yaml
+```
 
 At that point the application should be served on http://localhost:8080.
 
