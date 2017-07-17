@@ -27,6 +27,8 @@ A few highlights of this service worth calling out:
 * api/app.yaml
   * The app config is in a nested directory to enable vendoring.
   * This structure (along with using the legacy SDK) is the only way we've been able to get it to work with the current SDKs available.
+* .drone.yaml
+  * An example configuration file for [Drone CI](http://readme.drone.io/) using the [NYTimes/drone-gae](https://github.com/nytimes/drone-gae) plugin for managing automated deployments to App Engine.
 
 
 This live demo is currently running on [https://nyt-reading-list.appspot.com](https://nyt-reading-list.appspot.com/list.json).
