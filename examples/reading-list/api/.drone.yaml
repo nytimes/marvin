@@ -1,0 +1,43 @@
+# See: https://github.com/drone/drone/blob/v0.4.0/docs/build/README.md
+build:
+
+  test:
+    image: jprobinson/ae-go-buildbox:1.8
+    environment:
+      - GOPATH=/drone
+      - PATH=/usr/bin:/usr/local/go_appengine
+    commands:
+      - go test -v .
+      - go test -v ./api/...
+    when:
+      event: [push, pull_request]
+
+deploy:
+
+  # upload the latest version
+  gae:
+    environment:
+      - GOPATH=/drone
+    image: nytimes/drone-gae
+    action: update
+    project: nyt-reading-list 
+    dir: api
+    version: "$$COMMIT"
+    token: >
+      $$GOOGLE_CREDENTIALS
+    when:
+      event: push
+      branch: master 
+
+  # migrate traffic to the new version
+  gae:
+    image: nytimes/drone-gae
+    action: set_default_version
+    project: nyt-reading-list 
+    dir: api
+    version: "$$COMMIT"
+    token: >
+      $$GOOGLE_CREDENTIALS
+    when:
+      event: push
+      branch: master 
