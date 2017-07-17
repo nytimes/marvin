@@ -16,7 +16,7 @@ A few highlights of this service worth calling out:
   * An Open API specification that describes the endpoints and how they support JSON _or_ Protobufs.
 * gen-proto.sh 
   * A script that relies on github.com/NYTimes/openapi2proto to generate Protobuf IDL from the Open API spec along with the Protobuf stubs.
-* api/sevice.go 
+* api/service.go 
   * The actual marvin.Service implementation.
 * client.go
   * A go-kit client for programmatically accessing the API.
