@@ -1,20 +1,24 @@
-package api
+package main
 
 import (
 	"context"
 	"net/http"
 	"strings"
 
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/user"
+
 	"github.com/NYTimes/marvin"
 	"github.com/go-kit/kit/endpoint"
 	httptransport "github.com/go-kit/kit/transport/http"
-	"google.golang.org/appengine/user"
 
 	readinglist "github.com/NYTimes/marvin/examples/reading-list"
 )
 
-func init() {
+func main() {
 	marvin.Init(newService())
+
+	appengine.Main()
 }
 
 type httpService struct {

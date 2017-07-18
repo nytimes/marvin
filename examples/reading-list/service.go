@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/NYTimes/marvin"
-	"github.com/pkg/errors"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/user"
+
+	"github.com/NYTimes/marvin"
+	"github.com/pkg/errors"
 )
 
 type Service interface {

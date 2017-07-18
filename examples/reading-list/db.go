@@ -4,9 +4,10 @@ import (
 	"context"
 	"strings"
 
+	"google.golang.org/appengine/datastore"
+
 	"github.com/pkg/errors"
 	ocontext "golang.org/x/net/context"
-	"google.golang.org/appengine/datastore"
 )
 
 type DB interface {
