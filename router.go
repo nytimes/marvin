@@ -19,12 +19,21 @@ type Router interface {
 // RouterOption sets optional Router overrides.
 type RouterOption func(Router) Router
 
-// RouterSelect allows users to override the
-// default use of the GorillaRouter.
+// RouterSelect allows users to override the default use of the GorillaRouter with one of
+// the other implementations.
+//
+// The following router names are accepted:
+// * `gorilla` which uses github.com/gorilla/mux (on by default)
+// * `stdlib` to utilize the standard library's http.ServeMux
+// * `httprouter` which uses github.com/julienschmidt/httprouter
+//
+// If the supplied name does not match any known router, `gorilla` will be used.
+// If a user wishes to supply their own router implementation, the `CustomRouter` option
+// is available.
 func RouterSelect(name string) RouterOption {
 	return func(_ Router) Router {
 		switch name {
-		case "fast", "httprouter":
+		case "httprouter":
 			return &FastRouter{httprouter.New()}
 		case "gorilla":
 			return &GorillaRouter{mux.NewRouter()}
@@ -119,16 +128,14 @@ type FastRouter struct {
 	mux *httprouter.Router
 }
 
-// Handle will call the `httprouter.METHOD` methods and use the HTTPToFastRoute
-// to pass httprouter.Params into a Gorilla request context. The params will be available
-// via the `FastRouterVars` function.
+// Handle will call the `httprouter.METHOD` methods and pass the httprouter.Params into
+// the request context. The params will be available via the `Vars` function.
 func (f *FastRouter) Handle(method, path string, h http.Handler) {
-	f.mux.Handle(method, path, HTTPToFastRoute(h))
+	f.mux.Handle(method, path, httpToFastRoute(h))
 }
 
-// HandleFunc will call the `httprouter.METHOD` methods and use the HTTPToFastRoute
-// to pass httprouter.Params into a Gorilla request context. The params will be available
-// via the `FastRouterVars` function.
+// HandleFunc will call the `httprouter.METHOD` methods and pass the httprouter.Params into
+// the request context. The params will be available via the `Vars` function.
 func (f *FastRouter) HandleFunc(method, path string, h func(http.ResponseWriter, *http.Request)) {
 	f.Handle(method, path, http.HandlerFunc(h))
 }
@@ -143,14 +150,13 @@ func (f *FastRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	f.mux.ServeHTTP(w, r)
 }
 
-// HTTPToFastRoute will convert an http.Handler to a httprouter.Handle
-// by stuffing any route parameters into a Gorilla request context.
+// httpToFastRoute will convert an http.Handler to a httprouter.Handle
+// by stuffing any route parameters into the request context.
 // To access the request parameters within the endpoint,
 // use the `Vars` function.
-func HTTPToFastRoute(fh http.Handler) httprouter.Handle {
+func httpToFastRoute(fh http.Handler) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		if len(params) > 0 {
-
 			vars := map[string]string{}
 			for _, param := range params {
 				vars[param.Key] = param.Value
