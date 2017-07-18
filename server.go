@@ -33,9 +33,9 @@ var defaultOpts = []httptransport.ServerOption{
 		httptransport.PopulateRequestContext),
 }
 
-// Init will register the Service with the server
+// Init will register the Service with a Server
 // and register the server with App Engine.
-// Call this in an `init()` function.
+// Call this in an `init()` or `main()` function.
 func Init(service Service) {
 	http.Handle("/", NewServer(service))
 }
