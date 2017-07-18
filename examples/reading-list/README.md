@@ -8,28 +8,28 @@ To run this service, you must be using [Google Cloud SDK](https://cloud.google.c
 
 ```sh
 # If using Cloud SDK:
-dev_appserver.py api/app.yaml
+dev_appserver.py server/app.yaml
 # If using the original SDK:
-goapp serve api/app.yaml
+goapp serve server/app.yaml
 ```
 
 At that point the application should be served on http://localhost:8080.
 
 A few highlights of this service worth calling out:
 
-* reading-list.yaml
+* service.yaml
   * An Open API specification that describes the endpoints and how they support JSON _or_ Protobufs.
 * gen-proto.sh 
-  * A script that relies on github.com/NYTimes/openapi2proto to generate Protobuf IDL from the Open API spec along with the Protobuf stubs.
-* api/service.go 
-  * The actual marvin.Service implementation.
+  * A script that relies on github.com/NYTimes/openapi2proto to generate Protobuf IDL from the Open API spec along with the Protobuf stubs via protoc.
+* service.go 
+  * The actual marvin.MixedService implementation.
 * client.go
   * A go-kit client for programmatically accessing the API.
 * cmd/cli/main.go
   * A CLI wrapper around the go-kit client.
 * Gopkg.toml
   * To have truly reproducible builds across environments in the GAE Standard environment, this example uses the [dep](https://github.com/golang/dep) command to ensure all dependencies.
-* api/app.yaml
+* server/app.yaml
   * The app config is in a nested directory to enable vendoring.
   * This structure (along with using the legacy SDK) is the only way we've been able to get it to work with the current SDKs available.
 * .drone.yaml

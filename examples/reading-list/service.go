@@ -5,71 +5,106 @@ import (
 	"net/http"
 	"strings"
 
-	"google.golang.org/appengine/log"
-	"google.golang.org/appengine/user"
-
 	"github.com/NYTimes/marvin"
-	"github.com/pkg/errors"
+	"github.com/go-kit/kit/endpoint"
+	httptransport "github.com/go-kit/kit/transport/http"
+
+	"google.golang.org/appengine/user"
 )
 
-type Service interface {
-	GetLinks(context.Context, *GetListProtoJSONRequest) (*Links, error)
-	PutLink(context.Context, *PutLinkProtoJSONRequest) (*Message, error)
-}
-
-type linkService struct {
+type service struct {
 	db DB
 }
 
-func NewService(db DB) Service {
-	return linkService{db: db}
+func NewService(db DB) marvin.MixedService {
+	return service{db: db}
+}
+
+// adding a service-wide error handler that can check the path
+// suffix to determine how to serialize the error
+func (s service) Options() []httptransport.ServerOption {
+	return []httptransport.ServerOption{
+		httptransport.ServerErrorEncoder(func(ctx context.Context, err error, w http.ResponseWriter) {
+			// check proto/json by inspecting url
+			path := ctx.Value(httptransport.ContextKeyRequestPath).(string)
+			if strings.HasSuffix(path, ".json") {
+				httptransport.EncodeJSONResponse(ctx, w, err)
+				return
+			}
+			marvin.EncodeProtoResponse(ctx, w, err)
+		}),
+	}
+}
+
+// override the default gorilla router and select the stdlib
+func (s service) RouterOptions() []marvin.RouterOption {
+	return []marvin.RouterOption{
+		marvin.RouterSelect("stdlib"),
+	}
+}
+
+// in this example, we're tossing a simple CORS middleware in the mix
+func (s service) HTTPMiddleware(h http.Handler) http.Handler {
+	return marvin.CORSHandler(h, "")
+}
+
+// the go-kit middleware is used for checking user authentication and
+// injecting the current user into the request context.
+func (s service) Middleware(ep endpoint.Endpoint) endpoint.Endpoint {
+	return endpoint.Endpoint(func(ctx context.Context, r interface{}) (interface{}, error) {
+		usr, err := user.CurrentOAuth(ctx, "https://www.googleapis.com/auth/userinfo.profile")
+		if usr == nil || err != nil {
+			// reject if user is not logged in
+			return nil, marvin.NewProtoStatusResponse(
+				&Message{"please provide oauth token"},
+				http.StatusUnauthorized,
+			)
+		}
+		// add the user to the request context and continue
+		return ep(addUser(ctx, usr), r)
+	})
+}
+
+func (s service) JSONEndpoints() map[string]map[string]marvin.HTTPEndpoint {
+	return map[string]map[string]marvin.HTTPEndpoint{
+		"/link.json": {
+			"PUT": {
+				Endpoint: s.putLink,
+				Decoder:  decodePutRequest,
+			},
+		},
+		"/list.json": {
+			"GET": {
+				Endpoint: s.getLinks,
+				Decoder:  decodeGetRequest,
+			},
+		},
+	}
+}
+
+func (s service) ProtoEndpoints() map[string]map[string]marvin.HTTPEndpoint {
+	return map[string]map[string]marvin.HTTPEndpoint{
+		"/link.proto": {
+			"PUT": {
+				Endpoint: s.putLink,
+				Decoder:  decodePutProtoRequest,
+			},
+		},
+		"/list.proto": {
+			"GET": {
+				Endpoint: s.getLinks,
+				Decoder:  decodeGetRequest,
+			},
+		},
+	}
 }
 
 const userKey = "ae-user"
 
-func AddUser(ctx context.Context, usr *user.User) context.Context {
+func addUser(ctx context.Context, usr *user.User) context.Context {
 	return context.WithValue(ctx, userKey, usr)
 }
 
 func getUser(ctx context.Context) *user.User {
 	return ctx.Value(userKey).(*user.User)
-}
-
-func (s linkService) GetLinks(ctx context.Context, r *GetListProtoJSONRequest) (*Links, error) {
-	if r.Limit == 0 {
-		r.Limit = 50
-	}
-	links, err := s.db.GetLinks(ctx, getUser(ctx).ID, int(r.Limit))
-	if err != nil {
-		log.Errorf(ctx, "error getting links from DB: %s", err)
-		return nil, marvin.NewProtoStatusResponse(
-			&Message{"server error"},
-			http.StatusInternalServerError)
-	}
-	lks := make([]*Link, len(links))
-	for i, l := range links {
-		lks[i] = &Link{Url: l}
-	}
-	return &Links{Links: lks}, errors.Wrap(err, "unable to get links")
-}
-
-func (s linkService) PutLink(ctx context.Context, r *PutLinkProtoJSONRequest) (*Message, error) {
-	// nyt URLs only!
-	if !strings.HasPrefix(r.Request.Link.Url, "https://www.nytimes.com/") {
-		return nil, marvin.NewProtoStatusResponse(
-			&Message{"only https://www.nytimes.com URLs accepted"},
-			http.StatusBadRequest)
-	}
-	var err error
-	if r.Request.Delete {
-		err = s.db.DeleteLink(ctx, getUser(ctx).ID, r.Request.Link.Url)
-	} else {
-		err = s.db.PutLink(ctx, getUser(ctx).ID, r.Request.Link.Url)
-	}
-	if err != nil {
-		return nil, marvin.NewProtoStatusResponse(
-			&Message{"problems updating link"},
-			http.StatusInternalServerError)
-	}
-	return &Message{Message: "success"}, nil
 }
