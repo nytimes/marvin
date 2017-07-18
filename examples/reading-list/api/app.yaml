@@ -1,6 +1,5 @@
 runtime: go
 api_version: go1.8
-module: default
 
 handlers:
 - url: /.*
