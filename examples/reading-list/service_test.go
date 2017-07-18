@@ -1,4 +1,4 @@
-package main
+package readinglist
 
 import (
 	"bytes"
@@ -161,7 +161,7 @@ func TestService(t *testing.T) {
 			ctxdone := marvintest.SetupTestContext(t)
 
 			// init the server so we can call ServeHTTP on it
-			svr := marvin.NewServer(newService())
+			svr := marvin.NewServer(NewService(NewDB()))
 
 			//go through each step and call the server/verify the response
 			for _, step := range test.steps {
