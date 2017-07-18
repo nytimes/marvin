@@ -26,9 +26,9 @@ var (
 
 	// update
 	article = flag.String("url", "", "the URL to add or delete")
-	delete  = flag.Bool("delete", false, "delete this URL from the list")
+	delete  = flag.Bool("delete", false, "delete this URL from the list (requires -mode update)")
 
-	creds = flag.String("creds", "gcp.json", "the path of the service account credentials file")
+	creds = flag.String("creds", "", "the path of the service account credentials file. if empty, uses Google Application Default Credentials.")
 )
 
 func main() {
@@ -36,14 +36,19 @@ func main() {
 
 	ctx := context.Background()
 
+	hc, err := httpClient(ctx)
+	if err != nil {
+		exitf("%v", err)
+	}
+
 	c := readinglist.NewClient(*host, log.NewJSONLogger(os.Stdout),
-		httptransport.SetClient(httpClient(ctx)))
+		httptransport.SetClient(hc))
 
 	switch *mode {
 	case "list":
 		l, err := c.GetLinks(ctx, *limit)
 		if err != nil {
-			panic("unable to get links: " + err.Error())
+			exitf("unable to get links: %v", err)
 		}
 		fmt.Printf("successful request with %d links returned\n", len(l.Links))
 		for _, lk := range l.Links {
@@ -52,12 +57,12 @@ func main() {
 	case "update":
 		aurl := *article
 		if len(aurl) == 0 {
-			panic("please provide a valid URL")
+			exitf("missing -url flag")
 		}
 		fmt.Println("saving URL:", aurl)
 		m, err := c.PutLink(ctx, aurl, *delete)
 		if err != nil {
-			panic("unable to update link: " + err.Error())
+			exitf("unable to update link: %v", err)
 		}
 		fmt.Println(m.Message)
 	default:
@@ -65,19 +70,29 @@ func main() {
 	}
 }
 
-func httpClient(ctx context.Context) *http.Client {
-	jsonKey, err := ioutil.ReadFile(*creds)
-	if err != nil {
-		panic("unable to get credentials: " + err.Error())
-	}
-
-	conf, err := google.JWTConfigFromJSON(
-		jsonKey,
+func httpClient(ctx context.Context) (*http.Client, error) {
+	scopes := []string{
 		"https://www.googleapis.com/auth/userinfo.email",
 		"https://www.googleapis.com/auth/userinfo.profile",
-	)
-	if err != nil {
-		panic("unable to parse credentials: " + err.Error())
 	}
-	return oauth2.NewClient(ctx, conf.TokenSource(ctx))
+
+	if *creds == "" {
+		return google.DefaultClient(ctx, scopes...)
+	}
+	jsonKey, err := ioutil.ReadFile(*creds)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get credentials: %v", err)
+	}
+
+	conf, err := google.JWTConfigFromJSON(jsonKey, scopes...)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse credentials: %v", err)
+	}
+	return oauth2.NewClient(ctx, conf.TokenSource(ctx)), nil
+}
+
+func exitf(format string, v ...interface{}) {
+	fmt.Fprintf(os.Stderr, format, v...)
+	fmt.Fprintln(os.Stderr)
+	os.Exit(2)
 }
