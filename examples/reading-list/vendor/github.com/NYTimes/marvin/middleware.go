@@ -12,17 +12,29 @@ import (
 	"google.golang.org/appengine"
 )
 
-// Internal is a middleware handler meant to mark an endpoint or service for internal use
-// only. If the incoming request does not contain an 'X-Appengine-Inbound-Appid' header
-// that matches the AppID of the current service, this handler will return with with the
-// given denial response. The 'X-Appengine-Inbound-Appid' header is
-// significant in that it can be set only by other App Engine services using Google's
-// 'urlfetch' tooling.
-func Internal(ep endpoint.Endpoint, denial interface{}) endpoint.Endpoint {
+var defaultDenial = NewJSONStatusResponse(
+	map[string]string{"msg": "unauthorized"},
+	http.StatusUnauthorized)
+
+// Internal is a middleware handler meant to mark an endpoint or service for
+// service-to-service use only. If the incoming request does not contain an
+// 'X-Appengine-Inbound-Appid' header that matches the AppID of the current service,
+// this handler will return with with the given denial response.
+//
+// If no denial is given, the server will respond with a 401 status code and a simple
+// JSON response. If you supply your own denial, we recommend you use the Proto/JSONStatusResponse
+// structs to respond with a specific status code and the appropriate serialization.
+//
+// More info on the 'X-Appengine-Inbound-Appid' header here:
+// https://cloud.google.com/appengine/docs/standard/go/appidentity/#asserting_identity_to_other_app_engine_apps
+func Internal(ep endpoint.Endpoint, denial error) endpoint.Endpoint {
+	if denial == nil {
+		denial = defaultDenial
+	}
 	return endpoint.Endpoint(func(ctx context.Context, r interface{}) (interface{}, error) {
 		// only accept requests from our app
 		if ctx.Value(ContextKeyInboundAppID).(string) != appengine.AppID(ctx) {
-			return denial, nil
+			return nil, denial
 		}
 		return ep(ctx, r)
 	})

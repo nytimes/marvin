@@ -10,8 +10,8 @@
 [[projects]]
   name = "github.com/NYTimes/marvin"
   packages = [".","internal","marvintest"]
-  revision = "4a905c64627c847b5cb7b920a897402ba755814a"
-  version = "v0.1.1"
+  revision = "e28877b01dfc29c1e21802cafb840e82111e3b83"
+  version = "v0.1.2"
 
 [[projects]]
   name = "github.com/go-kit/kit"
@@ -89,7 +89,7 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp"]
-  revision = "b3756b4b77d7b13260a0a2ec658753cf48922eac"
+  revision = "5d0d7096b5f2ef7ba83f319c07ef63989a1c6f91"
 
 [[projects]]
   branch = "master"
@@ -101,7 +101,7 @@
   branch = "master"
   name = "google.golang.org/api"
   packages = ["appengine/v1","gensupport","googleapi","googleapi/internal/uritemplates"]
-  revision = "e665075b5ff79143ba49c58fab02df9dc122afd5"
+  revision = "295e4bb0ade057ae2cfb9876ab0b54635dbfcea4"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -112,6 +112,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9be203a6570b8aca0eb72d1edbf957add6b9cd90fa729a01ad4fd1e78042938b"
+  inputs-digest = "8040eb72bf5653422c3163166d4dbc48c0a4a1aa322c897fc3c9ab41f7998ab7"
   solver-name = "gps-cdcl"
   solver-version = 1

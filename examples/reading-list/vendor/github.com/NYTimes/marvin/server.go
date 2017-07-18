@@ -33,9 +33,9 @@ var defaultOpts = []httptransport.ServerOption{
 		httptransport.PopulateRequestContext),
 }
 
-// Init will register the Service with the server
+// Init will register the Service with a Server
 // and register the server with App Engine.
-// Call this in an `init()` function.
+// Call this in an `init()` or `main()` function.
 func Init(service Service) {
 	http.Handle("/", NewServer(service))
 }
@@ -43,7 +43,7 @@ func Init(service Service) {
 // Server manages routing and initiating the request context.
 // Users should only need to interact with this struct in testing.
 //
-// See examples/reading-list/service_test.go for usage.
+// See examples/reading-list/api/service_test.go for example usage.
 type Server struct {
 	mux Router
 }
@@ -52,7 +52,7 @@ type Server struct {
 // This gets called by Init() and should only be used within
 // tests.
 //
-// See examples/reading-list/service_test.go for usage.
+// See examples/reading-list/api/service_test.go for example usage.
 func NewServer(svc Service) Server {
 	opts := svc.RouterOptions()
 	if len(opts) == 0 {

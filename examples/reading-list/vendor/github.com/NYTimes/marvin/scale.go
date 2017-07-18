@@ -15,10 +15,22 @@ import (
 	"google.golang.org/appengine/module"
 )
 
-// ScalingHandler expects to be registered at `/_ah/push-handlers/scale/{dir:(up|down}`
+// ScalingHandler is a utility endpoint for adjusting the 'min_idle_instances' of the
+// current service on the fly. While App Engine's automatic scaling is sufficient for
+// most uses cases, we've found that some very large bursts of traffic (i.e. the spike
+// just after the new NYT crossword is published) cannot keep up without a large number
+// of idle instances at the ready. To avoid the high cost of always having large amounts
+// of idle instances, this endpoint can be used to preemptively scale your service up
+// before a spike and then back down to normal levels post spike.
+//
+// This handler expects to be registered at `/_ah/push-handlers/scale/{dir:(up|down}`
 // as a JSON Endpoint and it expects the environment to be provisioned with
 // `IDLE_INSTANCES_UP` and `IDLE_INSTANCES_DOWN` environment variables to set the number
 // of min_idle_instances before and after scaling events.
+//
+// This endpoint can be hit using App Engine cron for regularly recurring spikes but to
+// make this endpoint capable of sucurely accepting pushes from PubSub, it has the
+// `/_ah/push-handlers/` prefix.
 func ScalingHandler(ctx context.Context, _ interface{}) (interface{}, error) {
 	// get the scaling settings out of the environment
 	var scaling struct {
