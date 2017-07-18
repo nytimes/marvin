@@ -23,7 +23,7 @@ A few highlights of this service worth calling out:
 * cmd/cli/main.go
   * A CLI wrapper around the go-kit client.
 * Gopkg.toml
-  * To have truly reproducable builds across environments in the GAE Standard environment, this example uses the [dep](https://github.com/golang/dep) command to ensure all dependencies.
+  * To have truly reproducible builds across environments in the GAE Standard environment, this example uses the [dep](https://github.com/golang/dep) command to ensure all dependencies.
 * api/app.yaml
   * The app config is in a nested directory to enable vendoring.
   * This structure (along with using the legacy SDK) is the only way we've been able to get it to work with the current SDKs available.
