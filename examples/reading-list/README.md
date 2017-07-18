@@ -17,22 +17,22 @@ At that point the application should be served on http://localhost:8080.
 
 A few highlights of this service worth calling out:
 
-* service.yaml
+* [service.yaml](service.yaml)
   * An Open API specification that describes the endpoints and how they support JSON _or_ Protobufs.
-* gen-proto.sh 
+* [gen-proto.sh](gen-proto.sh)
   * A script that relies on github.com/NYTimes/openapi2proto to generate Protobuf IDL from the Open API spec along with the Protobuf stubs via protoc.
-* service.go 
-  * The actual marvin.MixedService implementation.
-* client.go
+* [service.go](service.go)
+  * The actual [marvin.MixedService](http://godoc.org/github.com/NYTimes/marvin#MixedService) implementation.
+* [client.go](client.go)
   * A go-kit client for programmatically accessing the API.
-* cmd/cli/main.go
+* [cmd/cli/main.go](cmd/cli/main.go)
   * A CLI wrapper around the go-kit client.
-* Gopkg.toml
+* [Gopkg.toml](Gopkg.toml)
   * To have truly reproducible builds across environments in the GAE Standard environment, this example uses the [dep](https://github.com/golang/dep) command to ensure all dependencies.
-* server/app.yaml
+* [server/app.yaml](server/app.yaml)
   * The app config is in a nested directory to enable vendoring.
   * This structure (along with using the legacy SDK) is the only way we've been able to get it to work with the current SDKs available.
-* .drone.yaml
+* [.drone.yaml](.drone.yaml)
   * An example configuration file for [Drone CI](http://readme.drone.io/) using the [NYTimes/drone-gae](https://github.com/nytimes/drone-gae) plugin for managing automated deployments to App Engine.
 
 
