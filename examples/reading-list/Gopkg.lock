@@ -10,8 +10,8 @@
 [[projects]]
   name = "github.com/NYTimes/marvin"
   packages = [".","internal","marvintest"]
-  revision = "e28877b01dfc29c1e21802cafb840e82111e3b83"
-  version = "v0.1.2"
+  revision = "e2aa394d2ca2ef39215c9910fa6498792472c0d9"
+  version = "v0.1.3"
 
 [[projects]]
   name = "github.com/go-kit/kit"
