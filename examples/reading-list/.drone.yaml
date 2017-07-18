@@ -8,7 +8,7 @@ build:
       - PATH=/usr/bin:/usr/local/go_appengine
     commands:
       - go test -v .
-      - go test -v ./api/...
+      - go test -v ./server/...
     when:
       event: [push, pull_request]
 
@@ -21,7 +21,7 @@ deploy:
     image: nytimes/drone-gae
     action: update
     project: nyt-reading-list 
-    dir: api
+    dir: server
     version: "$$COMMIT"
     token: >
       $$GOOGLE_CREDENTIALS
@@ -34,7 +34,7 @@ deploy:
     image: nytimes/drone-gae
     action: set_default_version
     project: nyt-reading-list 
-    dir: api
+    dir: server
     version: "$$COMMIT"
     token: >
       $$GOOGLE_CREDENTIALS
