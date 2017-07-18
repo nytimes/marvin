@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"google.golang.org/appengine"
+
 	"github.com/NYTimes/marvin"
 	"github.com/NYTimes/marvin/marvintest"
 	"github.com/kr/pretty"
@@ -33,7 +35,7 @@ func TestService(t *testing.T) {
 		steps []testStep
 	}{
 		{
-			name: "success - get, set, get, delete, get",
+			name: "success-get_set_get_delete_get",
 
 			steps: []testStep{
 				{
@@ -81,7 +83,7 @@ func TestService(t *testing.T) {
 			},
 		},
 		{
-			name: "success - set, (set dupe), set, get",
+			name: "success-set_set-dupe_set_get",
 
 			steps: []testStep{
 				{
@@ -139,7 +141,7 @@ func TestService(t *testing.T) {
 			},
 		},
 		{
-			name: "bad requests!",
+			name: "bad_requests",
 
 			steps: []testStep{
 				{
@@ -154,11 +156,21 @@ func TestService(t *testing.T) {
 			},
 		},
 	}
+	// deal with AE context/dev_appserver initialization.
+	// this call is expensive so we only want to call it once.
+	ctx, ctxdone := marvintest.SetupTestContextWithContext(t)
+	defer ctxdone()
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			// deal with AE context/dev_appserver initialization
-			ctxdone := marvintest.SetupTestContext(t)
+
+			ctx, err := appengine.Namespace(ctx, test.name)
+			if err != nil {
+				t.Fatalf("unable to init namespace: %s", err)
+			}
+			// override context to set a namespace for this test step
+			// to isolate it from the other test steps' data
+			marvintest.SetServerContext(ctx)
 
 			// init the server so we can call ServeHTTP on it
 			svr := marvin.NewServer(NewService(NewDB()))
@@ -200,14 +212,10 @@ func TestService(t *testing.T) {
 				}
 
 				// le sigh, local datastore be slow :(
-				time.Sleep(2 * time.Second)
+				time.Sleep(1 * time.Second)
 			}
-
-			// shut down the dev_appserver and wipe the local DB for the next scenario
-			ctxdone()
 		})
 	}
-
 }
 
 // compareFixture takes a struct and compares it to a test fixture by
