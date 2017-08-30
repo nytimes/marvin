@@ -1,11 +1,10 @@
 package readinglist
 
 import (
-	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"testing"
 	"time"
@@ -178,16 +177,15 @@ func TestService(t *testing.T) {
 			//go through each step and call the server/verify the response
 			for _, step := range test.steps {
 
-				var payload []byte
+				var payload *os.File
 				// set up the request body if a fixture is given
 				if step.givenPayloadFixture != "" {
-					var err error
-					payload, err = ioutil.ReadFile("fixtures/" + step.givenPayloadFixture)
+					payload, err = os.Open("fixtures/" + step.givenPayloadFixture)
 					if err != nil {
 						t.Fatalf("unable to read test fixture: %s", err)
 					}
 				}
-				r, err := http.NewRequest(step.givenMethod, step.givenURL, bytes.NewBuffer(payload))
+				r, err := http.NewRequest(step.givenMethod, step.givenURL, payload)
 				if err != nil {
 					t.Fatalf("unable to create test request: %s", err)
 				}
@@ -218,31 +216,17 @@ func TestService(t *testing.T) {
 	}
 }
 
-// compareFixture takes a struct and compares it to a test fixture by
-// converting them both to map[string]interface{}'s and doing a
+// compareFixture takes a struct and compares it to a test fixture with
 // reflect.DeepEqual. It will fail the test if they are not the same and
 // neatly log the differences.
-func compareFixture(t *testing.T, name string, obj interface{}, fixture string) {
-	// read and convert input object into map[string]interface{}
-	b, err := json.Marshal(obj)
-	if err != nil {
-		t.Errorf("[%s] could not marshal input to json", name)
-		return
-	}
-	var actual map[string]interface{}
-	err = json.Unmarshal(b, &actual)
-	if err != nil {
-		t.Errorf("[%s] could not unmarshal actual to map[string]interface{}", name)
-		return
-	}
-
+func compareFixture(t *testing.T, name string, actual interface{}, fixture string) {
 	// read and convert fixture into map[string]interface{}
-	b, err = ioutil.ReadFile(fixture)
+	file, err := os.Open(fixture)
 	if err != nil {
 		t.Fatalf("[%s] could not open test fixture: %s", name, fixture)
 	}
 	var expected map[string]interface{}
-	err = json.Unmarshal(b, &expected)
+	err = json.NewDecoder(file).Decode(&expected)
 	if err != nil {
 		t.Errorf("[%s] could not unmarshal expected to map[string]interface{}: %s", name, err)
 		return
