@@ -137,5 +137,6 @@ func retryEndpoint(e endpoint.Endpoint, l log.Logger) endpoint.Endpoint {
 		}),
 		l,
 	)
+	defer bl.Close()
 	return lb.Retry(3, 2*time.Second, lb.NewRoundRobin(bl))
 }
