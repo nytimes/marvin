@@ -46,6 +46,7 @@ func Init(service Service) {
 // See examples/reading-list/api/service_test.go for example usage.
 type Server struct {
 	mux Router
+	svc Service
 }
 
 // NewServer will init the mux and register all endpoints.
@@ -65,6 +66,7 @@ func NewServer(svc Service) Server {
 	}
 	svr := Server{
 		mux: r,
+		svc: svc,
 	}
 	err := svr.register(svc)
 	if err != nil {
@@ -78,8 +80,7 @@ func NewServer(svc Service) Server {
 // the app engine context and hand the request off to the router.
 func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r = r.WithContext(internal.NewContext(r))
-	// hand the request off to the router
-	s.mux.ServeHTTP(w, r)
+	s.svc.HTTPMiddleware(s.mux).ServeHTTP(w, r)
 }
 
 // register will accept and register server, JSONService or MixedService implementations.
@@ -122,12 +123,12 @@ func (s Server) register(svc Service) error {
 			if ep.Encoder == nil {
 				ep.Encoder = httptransport.EncodeJSONResponse
 			}
-			s.mux.Handle(method, path, svc.HTTPMiddleware(
+			s.mux.Handle(method, path,
 				httptransport.NewServer(
 					svc.Middleware(ep.Endpoint),
 					ep.Decoder,
 					ep.Encoder,
-					append(opts, ep.Options...)...)))
+					append(opts, ep.Options...)...))
 		}
 	}
 
@@ -147,12 +148,12 @@ func (s Server) register(svc Service) error {
 			if ep.Encoder == nil {
 				ep.Encoder = EncodeProtoResponse
 			}
-			s.mux.Handle(method, path, svc.HTTPMiddleware(
+			s.mux.Handle(method, path,
 				httptransport.NewServer(
 					svc.Middleware(ep.Endpoint),
 					ep.Decoder,
 					ep.Encoder,
-					append(opts, ep.Options...)...)))
+					append(opts, ep.Options...)...))
 		}
 	}
 
