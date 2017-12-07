@@ -52,7 +52,10 @@ func (s service) HTTPMiddleware(h http.Handler) http.Handler {
 // injecting the current user into the request context.
 func (s service) Middleware(ep endpoint.Endpoint) endpoint.Endpoint {
 	return endpoint.Endpoint(func(ctx context.Context, r interface{}) (interface{}, error) {
-		usr, err := user.CurrentOAuth(ctx, "https://www.googleapis.com/auth/userinfo.profile")
+		usr, err := user.CurrentOAuth(ctx,
+			"https://www.googleapis.com/auth/userinfo.profile",
+			"https://www.googleapis.com/auth/userinfo.email",
+		)
 		if usr == nil || err != nil {
 			// reject if user is not logged in
 			return nil, marvin.NewProtoStatusResponse(
