@@ -99,7 +99,7 @@ type JSONEndpointer interface {
 //		"/cats.proto": {
 //			"PUT": {
 //				Endpoint: s.PutCats,
-//				Decoder:  decodePutCatsProtoRequest,
+//				Decoder:  decodePutCatsRequest,
 //			},
 //			"GET": {
 //				Endpoint: s.GetCats,
