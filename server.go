@@ -177,7 +177,7 @@ func EncodeProtoResponse(ctx context.Context, w http.ResponseWriter, pres interf
 	if !ok {
 		return errors.New("response does not implement proto.Message")
 	}
-	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Type", "application/x-protobuf")
 	if headerer, ok := w.(httptransport.Headerer); ok {
 		for k := range headerer.Headers() {
 			w.Header().Set(k, headerer.Headers().Get(k))
