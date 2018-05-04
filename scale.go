@@ -77,8 +77,9 @@ func ScalingHandler(ctx context.Context, _ interface{}) (interface{}, error) {
 	call := svc.Patch(appengin.AppID(ctx), svcName, vrsn, &appengine.Version{
 		AutomaticScaling: &appengine.AutomaticScaling{
 			MinIdleInstances: idleInstances,
+			MaxIdleInstances: idleInstances + 5,
 		},
-	}).UpdateMask("automaticScaling.min_idle_instances")
+	}).UpdateMask("automaticScaling.min_idle_instances,automaticScaling.max_idle_instances")
 
 	// execute the version patch request
 	_, err = call.Do()
