@@ -3,9 +3,9 @@ package main
 import (
 	"google.golang.org/appengine"
 
-	"github.com/NYTimes/marvin"
+	"github.com/nytimes/marvin"
 
-	readinglist "github.com/NYTimes/marvin/examples/reading-list"
+	readinglist "github.com/nytimes/marvin/examples/reading-list"
 )
 
 // a tiny main package that simply initializes the service
