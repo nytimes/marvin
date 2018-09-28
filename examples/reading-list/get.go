@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/NYTimes/marvin"
+	"github.com/nytimes/marvin"
 	"github.com/pkg/errors"
 	"google.golang.org/appengine/log"
 )

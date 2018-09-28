@@ -8,7 +8,7 @@ import (
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/golang/protobuf/proto"
 
-	"github.com/NYTimes/marvin/internal"
+	"github.com/nytimes/marvin/internal"
 )
 
 type contextKey int
