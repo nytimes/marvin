@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/NYTimes/marvin"
 	"github.com/go-kit/kit/endpoint"
 	httptransport "github.com/go-kit/kit/transport/http"
-	"github.com/nytimes/marvin"
 
 	"google.golang.org/appengine/user"
 )

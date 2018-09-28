@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/NYTimes/marvin"
 	"github.com/golang/protobuf/proto"
-	"github.com/nytimes/marvin"
 )
 
 // go-kit endpoint.Endpoint with core business logic

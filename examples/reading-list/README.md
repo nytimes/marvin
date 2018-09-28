@@ -20,9 +20,9 @@ A few highlights of this service worth calling out:
 * [service.yaml](service.yaml)
   * An Open API specification that describes the endpoints and how they support JSON _or_ Protobufs.
 * [gen-proto.sh](gen-proto.sh)
-  * A script that relies on github.com/nytimes/openapi2proto to generate Protobuf IDL from the Open API spec along with the Protobuf stubs via protoc.
+  * A script that relies on github.com/NYTimes/openapi2proto to generate Protobuf IDL from the Open API spec along with the Protobuf stubs via protoc.
 * [service.go](service.go)
-  * The actual [marvin.MixedService](http://godoc.org/github.com/nytimes/marvin#MixedService) implementation.
+  * The actual [marvin.MixedService](http://godoc.org/github.com/NYTimes/marvin#MixedService) implementation.
 * [client.go](client.go)
   * A go-kit client for programmatically accessing the API.
 * [cmd/cli/main.go](cmd/cli/main.go)
@@ -33,7 +33,7 @@ A few highlights of this service worth calling out:
   * The app config is in a nested directory to enable vendoring.
   * This structure (along with using the legacy SDK) is the only way we've been able to get it to work with the current SDKs available.
 * [.drone.yaml](.drone.yaml)
-  * An example configuration file for [Drone CI](http://readme.drone.io/) using the [nytimes/drone-gae](https://github.com/nytimes/drone-gae) plugin for managing automated deployments to App Engine.
+  * An example configuration file for [Drone CI](http://readme.drone.io/) using the [NYTimes/drone-gae](https://github.com/nytimes/drone-gae) plugin for managing automated deployments to App Engine.
 
 
 This live demo is currently running on [https://nyt-reading-list.appspot.com](https://nyt-reading-list.appspot.com/list.json).

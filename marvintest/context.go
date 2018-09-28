@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/appengine/aetest"
 
-	"github.com/nytimes/marvin/internal"
+	"github.com/NYTimes/marvin/internal"
 )
 
 // SetupTestContext will start up dev_appserver.py via `appengine/aetest` and inject the

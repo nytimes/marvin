@@ -11,9 +11,9 @@ import (
 
 	"google.golang.org/appengine"
 
+	"github.com/NYTimes/marvin"
+	"github.com/NYTimes/marvin/marvintest"
 	"github.com/kr/pretty"
-	"github.com/nytimes/marvin"
-	"github.com/nytimes/marvin/marvintest"
 )
 
 type testStep struct {

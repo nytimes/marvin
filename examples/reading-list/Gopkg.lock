@@ -8,7 +8,7 @@
   version = "v0.10.0"
 
 [[projects]]
-  name = "github.com/nytimes/marvin"
+  name = "github.com/NYTimes/marvin"
   packages = [".","internal","marvintest"]
   revision = "e2aa394d2ca2ef39215c9910fa6498792472c0d9"
   version = "v0.1.3"

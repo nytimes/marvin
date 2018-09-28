@@ -13,7 +13,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 
-	readinglist "github.com/nytimes/marvin/examples/reading-list"
+	readinglist "github.com/NYTimes/marvin/examples/reading-list"
 )
 
 var (
