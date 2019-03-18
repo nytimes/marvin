@@ -1,4 +1,4 @@
-package marvintest
+package marvintest // import "github.com/NYTimes/marvin/marvintest"
 
 import (
 	"context"
